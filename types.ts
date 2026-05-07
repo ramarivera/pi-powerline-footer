@@ -113,6 +113,8 @@ export interface PresetDef {
   secondaryPlacement?: SecondaryPlacement;
   /** Add a blank spacer before secondarySegments when rendered above the editor */
   secondaryTopPadding?: boolean;
+  /** Add a blank spacer before the primary powerline row */
+  topPadding?: boolean;
   separator: StatusLineSeparatorStyle;
   segmentOptions?: StatusLineSegmentOptions;
   /** Color scheme for this preset */

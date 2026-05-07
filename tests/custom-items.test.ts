@@ -56,6 +56,7 @@ test("parsePowerlineConfig supports custom preset layout", () => {
         belowEditorSegments: ["custom:goal"],
         secondaryPlacement: "aboveEditor",
         secondaryTopPadding: true,
+        topPadding: true,
         options: { path: { mode: "basename" } },
       },
       customItems: [{ id: "context_gauge" }],
@@ -70,6 +71,7 @@ test("parsePowerlineConfig supports custom preset layout", () => {
   assert.deepEqual(config.custom?.belowEditorSegments, ["custom:goal"]);
   assert.equal(config.custom?.secondaryPlacement, "aboveEditor");
   assert.equal(config.custom?.secondaryTopPadding, true);
+  assert.equal(config.custom?.topPadding, true);
   assert.equal(config.custom?.separator, "powerline-thin");
   assert.deepEqual(config.custom?.segmentOptions, { path: { mode: "basename" } });
 });
@@ -88,6 +90,7 @@ test("customPresetFromConfig builds a config-defined preset", () => {
   assert.deepEqual(resolved.belowEditorSegments, []);
   assert.equal(resolved.secondaryPlacement, "belowEditor");
   assert.equal(resolved.secondaryTopPadding, false);
+  assert.equal(resolved.topPadding, false);
   assert.equal(resolved.separator, "powerline");
   assert.equal(resolved.colors, colors);
 });
