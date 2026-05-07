@@ -2236,7 +2236,11 @@ export default function powerlineFooter(pi: ExtensionAPI) {
     if (!currentCtx) return [];
 
     const layout = getResponsiveLayout(width, theme);
-    return layout.topContent ? [layout.topContent] : [];
+    if (!layout.topContent) return [];
+    if (getSecondaryPlacement() === "aboveEditor" && getSecondaryTopPadding()) {
+      return [layout.topContent, " "];
+    }
+    return [layout.topContent];
   }
 
   function renderPowerlineSecondaryLines(width: number, theme: Theme): string[] {
@@ -2244,9 +2248,6 @@ export default function powerlineFooter(pi: ExtensionAPI) {
 
     const layout = getResponsiveLayout(width, theme);
     if (!layout.secondaryContent) return [];
-    if (getSecondaryPlacement() === "aboveEditor" && getSecondaryTopPadding()) {
-      return ["", layout.secondaryContent];
-    }
     return [layout.secondaryContent];
   }
 
