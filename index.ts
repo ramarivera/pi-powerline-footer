@@ -871,6 +871,32 @@ function buildContentFromParts(
   return " " + parts.join(` ${sepAnsi}${sep}${ansi.reset} `) + ansi.reset + " ";
 }
 
+function renderSegmentRow(
+  ctx: SegmentContext,
+  presetDef: PresetDef,
+  segmentIds: readonly StatusLineSegmentId[],
+  availableWidth: number,
+): string {
+  const separatorDef = getSeparator(presetDef.separator);
+  const sepWidth = visibleWidth(separatorDef.left) + 2; // separator + spaces around it
+  const baseOverhead = 2;
+  let currentWidth = baseOverhead;
+  const parts: string[] = [];
+
+  for (const segId of segmentIds) {
+    const { content, width, visible } = renderSegmentWithWidth(segId, ctx);
+    if (!visible) continue;
+
+    const neededWidth = width + (parts.length > 0 ? sepWidth : 0);
+    if (currentWidth + neededWidth > availableWidth) break;
+
+    parts.push(content);
+    currentWidth += neededWidth;
+  }
+
+  return buildContentFromParts(parts, presetDef);
+}
+
 /**
  * Responsive segment layout - fits segments into top bar, overflows to secondary row.
  * When terminal is wide enough, secondary segments move up to top bar.
@@ -891,6 +917,14 @@ function computeResponsiveLayout(
   const primaryIds = [...segments.leftSegments, ...segments.rightSegments];
   const secondaryIds = segments.secondarySegments ?? [];
   const belowEditorIds = segments.belowEditorSegments ?? [];
+  if (config.preset === "custom") {
+    return {
+      topContent: renderSegmentRow(ctx, presetDef, primaryIds, availableWidth),
+      secondaryContent: renderSegmentRow(ctx, presetDef, secondaryIds, availableWidth),
+      belowEditorContent: renderSegmentRow(ctx, presetDef, belowEditorIds, availableWidth),
+    };
+  }
+
   const allSegmentIds = [...primaryIds, ...secondaryIds];
   
   // Render all segments and get their widths
