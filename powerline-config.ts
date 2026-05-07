@@ -1,5 +1,5 @@
 import { visibleWidth } from "@mariozechner/pi-tui";
-import type { ColorScheme, ColorValue, CustomItemPosition, CustomPresetConfig, CustomStatusItem, PresetDef, StatusLinePreset, StatusLineSegmentId, StatusLineSeparatorStyle, StatusLineSegmentOptions } from "./types.ts";
+import type { ColorScheme, ColorValue, CustomItemPosition, CustomPresetConfig, CustomStatusItem, PresetDef, SecondaryPlacement, StatusLinePreset, StatusLineSegmentId, StatusLineSeparatorStyle, StatusLineSegmentOptions } from "./types.ts";
 
 export interface PowerlineConfig {
   preset: StatusLinePreset;
@@ -73,6 +73,10 @@ function normalizeSeparator(value: unknown): StatusLineSeparatorStyle | undefine
   }
 }
 
+function normalizeSecondaryPlacement(value: unknown): SecondaryPlacement | undefined {
+  return value === "aboveEditor" || value === "belowEditor" ? value : undefined;
+}
+
 function normalizeSegmentOptions(value: unknown): StatusLineSegmentOptions | undefined {
   return isRecord(value) ? (value as StatusLineSegmentOptions) : undefined;
 }
@@ -84,6 +88,8 @@ function normalizeCustomPreset(raw: unknown): CustomPresetConfig | undefined {
     leftSegments: normalizeSegmentIds(raw.leftSegments),
     rightSegments: normalizeSegmentIds(raw.rightSegments),
     secondarySegments: normalizeSegmentIds(raw.secondarySegments),
+    belowEditorSegments: normalizeSegmentIds(raw.belowEditorSegments),
+    secondaryPlacement: normalizeSecondaryPlacement(raw.secondaryPlacement),
     separator: normalizeSeparator(raw.separator),
     segmentOptions: normalizeSegmentOptions(raw.options),
   };
@@ -152,6 +158,8 @@ export function customPresetFromConfig(config: PowerlineConfig, colors?: ColorSc
     leftSegments: config.custom?.leftSegments ?? [],
     rightSegments: config.custom?.rightSegments ?? [],
     secondarySegments: config.custom?.secondarySegments ?? [],
+    belowEditorSegments: config.custom?.belowEditorSegments ?? [],
+    secondaryPlacement: config.custom?.secondaryPlacement ?? "belowEditor",
     separator: config.custom?.separator ?? "powerline-thin",
     segmentOptions: config.custom?.segmentOptions ?? {},
     colors,
@@ -162,10 +170,12 @@ export function mergeSegmentsWithCustomItems(presetDef: PresetDef, customItems: 
   leftSegments: StatusLineSegmentId[];
   rightSegments: StatusLineSegmentId[];
   secondarySegments: StatusLineSegmentId[];
+  belowEditorSegments: StatusLineSegmentId[];
 } {
   const left: StatusLineSegmentId[] = [...presetDef.leftSegments];
   const right: StatusLineSegmentId[] = [...presetDef.rightSegments];
   const secondary: StatusLineSegmentId[] = [...(presetDef.secondarySegments ?? [])];
+  const belowEditor: StatusLineSegmentId[] = [...(presetDef.belowEditorSegments ?? [])];
 
   for (const item of customItems) {
     const segmentId: StatusLineSegmentId = `custom:${item.id}`;
@@ -174,7 +184,7 @@ export function mergeSegmentsWithCustomItems(presetDef: PresetDef, customItems: 
     else right.push(segmentId);
   }
 
-  return { leftSegments: left, rightSegments: right, secondarySegments: secondary };
+  return { leftSegments: left, rightSegments: right, secondarySegments: secondary, belowEditorSegments: belowEditor };
 }
 
 export function nextPowerlineSettingWithPreset(existingPowerlineSetting: unknown, preset: StatusLinePreset): unknown {

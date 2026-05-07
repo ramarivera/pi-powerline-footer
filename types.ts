@@ -32,6 +32,8 @@ export type BuiltinStatusLineSegmentId =
   | "shell_mode"
   | "path"
   | "git"
+  | "git_branch"
+  | "git_dirty"
   | "subagents"
   | "token_in"
   | "token_out"
@@ -87,6 +89,7 @@ export interface StatusLineSegmentOptions {
 }
 
 export type CustomItemPosition = "left" | "right" | "secondary";
+export type SecondaryPlacement = "aboveEditor" | "belowEditor";
 
 export interface CustomStatusItem {
   id: string;
@@ -104,6 +107,10 @@ export interface PresetDef {
   rightSegments: StatusLineSegmentId[];
   /** Secondary row segments (shown in footer, above sub bar) */
   secondarySegments?: StatusLineSegmentId[];
+  /** Dedicated below-editor row segments for goal/task metadata */
+  belowEditorSegments?: StatusLineSegmentId[];
+  /** Where to render secondarySegments when present */
+  secondaryPlacement?: SecondaryPlacement;
   separator: StatusLineSeparatorStyle;
   segmentOptions?: StatusLineSegmentOptions;
   /** Color scheme for this preset */

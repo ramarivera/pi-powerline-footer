@@ -4,6 +4,7 @@
 
 ### Added
 - **Configurable custom preset layout** — `powerline.preset: "custom"` can now define explicit segment rows, separator style, and per-segment options through `powerline.custom`, including `custom:<id>` entries for promoted extension statuses.
+- **Custom row placement and split git segments** — Custom presets can place the secondary row above the editor, reserve `belowEditorSegments` for prompt-below metadata, and use `git_branch` / `git_dirty` independently.
 
 ## [0.5.1] - 2026-05-02
 

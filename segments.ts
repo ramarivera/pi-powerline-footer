@@ -177,6 +177,44 @@ const gitSegment: StatusLineSegment = {
   },
 };
 
+const gitBranchSegment: StatusLineSegment = {
+  id: "git_branch",
+  render(ctx) {
+    const { branch, staged, unstaged, untracked } = ctx.git;
+    if (!branch) return { content: "", visible: false };
+
+    const icons = getIcons();
+    const isDirty = staged > 0 || unstaged > 0 || untracked > 0;
+    const branchColor: SemanticColor = isDirty ? "gitDirty" : "gitClean";
+
+    return { content: color(ctx, branchColor, withIcon(icons.branch, branch)), visible: true };
+  },
+};
+
+const gitDirtySegment: StatusLineSegment = {
+  id: "git_dirty",
+  render(ctx) {
+    const icons = getIcons();
+    const opts = ctx.options.git ?? {};
+    const { staged, unstaged, untracked } = ctx.git;
+    const indicators: string[] = [];
+
+    if (opts.showUnstaged !== false && unstaged > 0) {
+      indicators.push(applyColor(ctx.theme, "warning", `*${unstaged}`));
+    }
+    if (opts.showStaged !== false && staged > 0) {
+      indicators.push(applyColor(ctx.theme, "success", `+${staged}`));
+    }
+    if (opts.showUntracked !== false && untracked > 0) {
+      indicators.push(applyColor(ctx.theme, "muted", `?${untracked}`));
+    }
+    if (indicators.length === 0) return { content: "", visible: false };
+
+    const prefix = icons.git ? `${color(ctx, "gitDirty", icons.git)} ` : "";
+    return { content: `${prefix}${indicators.join(" ")}`, visible: true };
+  },
+};
+
 const thinkingSegment: StatusLineSegment = {
   id: "thinking",
   render(ctx) {
@@ -433,6 +471,8 @@ export const SEGMENTS: Record<BuiltinStatusLineSegmentId, StatusLineSegment> = {
   shell_mode: shellModeSegment,
   path: pathSegment,
   git: gitSegment,
+  git_branch: gitBranchSegment,
+  git_dirty: gitDirtySegment,
   thinking: thinkingSegment,
   subagents: subagentsSegment,
   token_in: tokenInSegment,

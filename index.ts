@@ -880,7 +880,7 @@ function computeResponsiveLayout(
   ctx: SegmentContext,
   presetDef: PresetDef,
   availableWidth: number
-): { topContent: string; secondaryContent: string } {
+): { topContent: string; secondaryContent: string; belowEditorContent: string } {
   const separatorDef = getSeparator(presetDef.separator);
   const sepWidth = visibleWidth(separatorDef.left) + 2; // separator + spaces around it
   
@@ -890,6 +890,7 @@ function computeResponsiveLayout(
     : mergeSegmentsWithCustomItems(presetDef, config.customItems);
   const primaryIds = [...segments.leftSegments, ...segments.rightSegments];
   const secondaryIds = segments.secondarySegments ?? [];
+  const belowEditorIds = segments.belowEditorSegments ?? [];
   const allSegmentIds = [...primaryIds, ...secondaryIds];
   
   // Render all segments and get their widths
@@ -901,8 +902,16 @@ function computeResponsiveLayout(
     }
   }
   
+  const belowEditorSegments: string[] = [];
+  for (const segId of belowEditorIds) {
+    const { content, visible } = renderSegmentWithWidth(segId, ctx);
+    if (visible) {
+      belowEditorSegments.push(content);
+    }
+  }
+
   if (renderedSegments.length === 0) {
-    return { topContent: "", secondaryContent: "" };
+    return { topContent: "", secondaryContent: "", belowEditorContent: buildContentFromParts(belowEditorSegments, presetDef) };
   }
   
   // Calculate how many segments fit in top bar
@@ -939,10 +948,11 @@ function computeResponsiveLayout(
       break;
     }
   }
-  
+
   return {
     topContent: buildContentFromParts(topSegments, presetDef),
     secondaryContent: buildContentFromParts(secondarySegments, presetDef),
+    belowEditorContent: buildContentFromParts(belowEditorSegments, presetDef),
   };
 }
 
@@ -988,7 +998,7 @@ export default function powerlineFooter(pi: ExtensionAPI) {
   
   // Cache for the top and secondary powerline widgets.
   let lastLayoutWidth = 0;
-  let lastLayoutResult: { topContent: string; secondaryContent: string } | null = null;
+  let lastLayoutResult: { topContent: string; secondaryContent: string; belowEditorContent: string } | null = null;
   let lastLayoutTimestamp = 0;
   let layoutDirty = true;
   let forceNextLayoutRecompute = false;
@@ -1746,6 +1756,7 @@ export default function powerlineFooter(pi: ExtensionAPI) {
           ctx.ui.setHeader(undefined);
           ctx.ui.setWidget("powerline-top", undefined);
           ctx.ui.setWidget("powerline-secondary", undefined);
+          ctx.ui.setWidget("powerline-below-editor", undefined);
           ctx.ui.setWidget("powerline-bash-transcript", undefined);
           ctx.ui.setWidget("powerline-status", undefined);
           ctx.ui.setWidget("powerline-last-prompt", undefined);
@@ -2138,7 +2149,7 @@ export default function powerlineFooter(pi: ExtensionAPI) {
    * Get cached responsive layout or compute fresh one.
    * The segment context scans session state, so keep it stable across render bursts.
    */
-  function getResponsiveLayout(width: number, theme: Theme): { topContent: string; secondaryContent: string } {
+  function getResponsiveLayout(width: number, theme: Theme): { topContent: string; secondaryContent: string; belowEditorContent: string } {
     const now = Date.now();
     const cacheTtl = isStreaming ? STREAMING_LAYOUT_CACHE_TTL_MS : LAYOUT_CACHE_TTL_MS;
 
@@ -2199,6 +2210,18 @@ export default function powerlineFooter(pi: ExtensionAPI) {
 
     const layout = getResponsiveLayout(width, theme);
     return layout.secondaryContent ? [layout.secondaryContent] : [];
+  }
+
+  function renderPowerlineBelowEditorLines(width: number, theme: Theme): string[] {
+    if (!currentCtx) return [];
+
+    const layout = getResponsiveLayout(width, theme);
+    return layout.belowEditorContent ? [layout.belowEditorContent] : [];
+  }
+
+  function getSecondaryPlacement(): "aboveEditor" | "belowEditor" {
+    if (config.preset !== "custom") return "belowEditor";
+    return customPresetFromConfig(config).secondaryPlacement ?? "belowEditor";
   }
 
   function renderBashTranscriptLines(width: number, theme: Theme): string[] {
@@ -2317,13 +2340,22 @@ export default function powerlineFooter(pi: ExtensionAPI) {
           : [];
         const aboveWidgetLines = fixedWidgetContainerAbove ? compositor.renderHidden(fixedWidgetContainerAbove, width) : [];
         const belowWidgetLines = fixedWidgetContainerBelow ? compositor.renderHidden(fixedWidgetContainerBelow, width) : [];
+        const secondaryPlacement = getSecondaryPlacement();
+        const secondaryPowerlineLines = renderPowerlineSecondaryLines(width, theme);
         return renderFixedEditorCluster({
           width,
           terminalRows,
           statusLines: [...aboveWidgetLines, ...renderPowerlineStatusLines(width), ...statusContainerLines],
-          topLines: renderPowerlineTopLines(width, theme),
+          topLines: [
+            ...renderPowerlineTopLines(width, theme),
+            ...(secondaryPlacement === "aboveEditor" ? secondaryPowerlineLines : []),
+          ],
           editorLines: fixedEditorContainer ? compositor.renderHidden(fixedEditorContainer, width) : [],
-          secondaryLines: [...renderPowerlineSecondaryLines(width, theme), ...belowWidgetLines],
+          secondaryLines: [
+            ...(secondaryPlacement === "belowEditor" ? secondaryPowerlineLines : []),
+            ...renderPowerlineBelowEditorLines(width, theme),
+            ...belowWidgetLines,
+          ],
           transcriptLines: renderBashTranscriptLines(width, theme),
           lastPromptLines: renderLastPromptLines(width),
         });
@@ -2463,6 +2495,16 @@ export default function powerlineFooter(pi: ExtensionAPI) {
       render(width: number): string[] {
         return renderPowerlineSecondaryLines(width, theme);
       },
+    }), { placement: getSecondaryPlacement() });
+
+    ctx.ui.setWidget("powerline-below-editor", (_tui: any, theme: Theme) => ({
+      dispose() {},
+      invalidate() {
+        resetLayoutCache();
+      },
+      render(width: number): string[] {
+        return renderPowerlineBelowEditorLines(width, theme);
+      },
     }), { placement: "belowEditor" });
 
     ctx.ui.setWidget("powerline-bash-transcript", (_tui: any, theme: Theme) => ({
@@ -2516,6 +2558,7 @@ export default function powerlineFooter(pi: ExtensionAPI) {
     teardownFixedEditorCompositor();
     ctx.ui.setWidget("powerline-top", undefined);
     ctx.ui.setWidget("powerline-secondary", undefined);
+    ctx.ui.setWidget("powerline-below-editor", undefined);
     ctx.ui.setWidget("powerline-bash-transcript", undefined);
     ctx.ui.setWidget("powerline-status", undefined);
     ctx.ui.setWidget("powerline-last-prompt", undefined);

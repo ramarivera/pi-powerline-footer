@@ -52,7 +52,9 @@ test("parsePowerlineConfig supports custom preset layout", () => {
         separator: "powerline-thin",
         leftSegments: ["custom:model_display", "path", "git"],
         rightSegments: ["custom:context_gauge"],
-        secondarySegments: [],
+        secondarySegments: ["git_branch", "git_dirty"],
+        belowEditorSegments: ["custom:goal"],
+        secondaryPlacement: "aboveEditor",
         options: { path: { mode: "basename" } },
       },
       customItems: [{ id: "context_gauge" }],
@@ -63,7 +65,9 @@ test("parsePowerlineConfig supports custom preset layout", () => {
   assert.equal(config.preset, "custom");
   assert.deepEqual(config.custom?.leftSegments, ["custom:model_display", "path", "git"]);
   assert.deepEqual(config.custom?.rightSegments, ["custom:context_gauge"]);
-  assert.deepEqual(config.custom?.secondarySegments, []);
+  assert.deepEqual(config.custom?.secondarySegments, ["git_branch", "git_dirty"]);
+  assert.deepEqual(config.custom?.belowEditorSegments, ["custom:goal"]);
+  assert.equal(config.custom?.secondaryPlacement, "aboveEditor");
   assert.equal(config.custom?.separator, "powerline-thin");
   assert.deepEqual(config.custom?.segmentOptions, { path: { mode: "basename" } });
 });
@@ -79,6 +83,8 @@ test("customPresetFromConfig builds a config-defined preset", () => {
   assert.deepEqual(resolved.leftSegments, ["custom:model_display"]);
   assert.deepEqual(resolved.rightSegments, []);
   assert.deepEqual(resolved.secondarySegments, []);
+  assert.deepEqual(resolved.belowEditorSegments, []);
+  assert.equal(resolved.secondaryPlacement, "belowEditor");
   assert.equal(resolved.separator, "powerline");
   assert.equal(resolved.colors, colors);
 });

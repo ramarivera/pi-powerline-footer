@@ -132,6 +132,8 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
       "leftSegments": ["custom:model_display", "path", "git"],
       "rightSegments": ["custom:context_gauge"],
       "secondarySegments": [],
+      "secondaryPlacement": "belowEditor",
+      "belowEditorSegments": [],
       "options": { "path": { "mode": "basename" } }
     },
     "customItems": [
@@ -142,7 +144,7 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
 }
 ```
 
-`leftSegments`, `rightSegments`, and `secondarySegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. With `preset: "custom"`, custom item `position` is ignored.
+`leftSegments`, `rightSegments`, `secondarySegments`, and `belowEditorSegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. `secondaryPlacement` controls whether `secondarySegments` render `"aboveEditor"` or `"belowEditor"`; `belowEditorSegments` always stay below the prompt box. With `preset: "custom"`, custom item `position` is ignored.
 
 If you still prefer the old style, `"powerline": "default"` continues to work.
 
@@ -346,7 +348,7 @@ Configure via preset options: `path: { mode: "full" }`
 
 ## Segments
 
-`model` · `thinking` · `shell_mode` · `path` · `git` · `subagents` · `token_in` · `token_out` · `token_total` · `cost` · `context_pct` · `context_total` · `time_spent` · `time` · `session` · `hostname` · `cache_read` · `cache_write`
+`model` · `thinking` · `shell_mode` · `path` · `git` · `git_branch` · `git_dirty` · `subagents` · `token_in` · `token_out` · `token_total` · `cost` · `context_pct` · `context_total` · `time_spent` · `time` · `session` · `hostname` · `cache_read` · `cache_write`
 
 Custom preset layouts can also use `custom:<id>` entries for configured custom items.
 
