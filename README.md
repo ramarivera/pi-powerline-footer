@@ -133,6 +133,7 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
       "rightSegments": ["custom:context_gauge"],
       "secondarySegments": [],
       "secondaryPlacement": "belowEditor",
+      "secondaryTopPadding": false,
       "belowEditorSegments": [],
       "options": { "path": { "mode": "basename" } }
     },
@@ -144,7 +145,7 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
 }
 ```
 
-`leftSegments`, `rightSegments`, `secondarySegments`, and `belowEditorSegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. `secondaryPlacement` controls whether `secondarySegments` render `"aboveEditor"` or `"belowEditor"`; `belowEditorSegments` always stay below the prompt box. With `preset: "custom"`, custom item `position` is ignored.
+`leftSegments`, `rightSegments`, `secondarySegments`, and `belowEditorSegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. `secondaryPlacement` controls whether `secondarySegments` render `"aboveEditor"` or `"belowEditor"`; `secondaryTopPadding` adds a blank spacer before an above-editor secondary row; `belowEditorSegments` always stay below the prompt box. With `preset: "custom"`, custom item `position` is ignored.
 
 If you still prefer the old style, `"powerline": "default"` continues to work.
 

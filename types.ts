@@ -111,6 +111,8 @@ export interface PresetDef {
   belowEditorSegments?: StatusLineSegmentId[];
   /** Where to render secondarySegments when present */
   secondaryPlacement?: SecondaryPlacement;
+  /** Add a blank spacer before secondarySegments when rendered above the editor */
+  secondaryTopPadding?: boolean;
   separator: StatusLineSeparatorStyle;
   segmentOptions?: StatusLineSegmentOptions;
   /** Color scheme for this preset */

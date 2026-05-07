@@ -2243,7 +2243,11 @@ export default function powerlineFooter(pi: ExtensionAPI) {
     if (!currentCtx) return [];
 
     const layout = getResponsiveLayout(width, theme);
-    return layout.secondaryContent ? [layout.secondaryContent] : [];
+    if (!layout.secondaryContent) return [];
+    if (getSecondaryPlacement() === "aboveEditor" && getSecondaryTopPadding()) {
+      return ["", layout.secondaryContent];
+    }
+    return [layout.secondaryContent];
   }
 
   function renderPowerlineBelowEditorLines(width: number, theme: Theme): string[] {
@@ -2256,6 +2260,11 @@ export default function powerlineFooter(pi: ExtensionAPI) {
   function getSecondaryPlacement(): "aboveEditor" | "belowEditor" {
     if (config.preset !== "custom") return "belowEditor";
     return customPresetFromConfig(config).secondaryPlacement ?? "belowEditor";
+  }
+
+  function getSecondaryTopPadding(): boolean {
+    if (config.preset !== "custom") return false;
+    return customPresetFromConfig(config).secondaryTopPadding ?? false;
   }
 
   function renderBashTranscriptLines(width: number, theme: Theme): string[] {

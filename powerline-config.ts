@@ -90,6 +90,7 @@ function normalizeCustomPreset(raw: unknown): CustomPresetConfig | undefined {
     secondarySegments: normalizeSegmentIds(raw.secondarySegments),
     belowEditorSegments: normalizeSegmentIds(raw.belowEditorSegments),
     secondaryPlacement: normalizeSecondaryPlacement(raw.secondaryPlacement),
+    secondaryTopPadding: raw.secondaryTopPadding === true,
     separator: normalizeSeparator(raw.separator),
     segmentOptions: normalizeSegmentOptions(raw.options),
   };
@@ -160,6 +161,7 @@ export function customPresetFromConfig(config: PowerlineConfig, colors?: ColorSc
     secondarySegments: config.custom?.secondarySegments ?? [],
     belowEditorSegments: config.custom?.belowEditorSegments ?? [],
     secondaryPlacement: config.custom?.secondaryPlacement ?? "belowEditor",
+    secondaryTopPadding: config.custom?.secondaryTopPadding ?? false,
     separator: config.custom?.separator ?? "powerline-thin",
     segmentOptions: config.custom?.segmentOptions ?? {},
     colors,
