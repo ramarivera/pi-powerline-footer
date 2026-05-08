@@ -7,6 +7,7 @@
 - **Custom row placement and split git segments** — Custom presets can place the secondary row above the editor, reserve `belowEditorSegments` for prompt-below metadata, and use `git_branch` / `git_dirty` independently.
 - **Above-editor row spacing** — Custom presets can set `secondaryTopPadding: true` to add a blank spacer before an above-editor secondary row.
 - **Primary row spacing** — Custom presets can set `topPadding: true` to add a blank spacer before the primary powerline row.
+- **Fit-based custom row collapse** — Custom presets can set `collapseRowsWhenFit: true` to render primary and secondary segments as one row when the full visible row fits.
 
 ## [0.5.1] - 2026-05-02
 
