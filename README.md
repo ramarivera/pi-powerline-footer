@@ -135,7 +135,6 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
       "secondaryPlacement": "belowEditor",
       "topPadding": false,
       "secondaryTopPadding": false,
-      "collapseRowsWhenFit": false,
       "belowEditorSegments": [],
       "options": { "path": { "mode": "basename" } }
     },
@@ -147,7 +146,7 @@ Use `"preset": "custom"` to define explicit rows instead of appending `customIte
 }
 ```
 
-`leftSegments`, `rightSegments`, `secondarySegments`, and `belowEditorSegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. `secondaryPlacement` controls whether `secondarySegments` render `"aboveEditor"` or `"belowEditor"`; `topPadding` adds a blank spacer before the primary row; `secondaryTopPadding` adds a blank spacer before an above-editor secondary row; `collapseRowsWhenFit` renders primary and secondary segments as one row when every visible segment fits; `belowEditorSegments` always stay below the prompt box. With `preset: "custom"`, custom item `position` is ignored.
+`leftSegments`, `rightSegments`, `secondarySegments`, and `belowEditorSegments` accept the built-in segment ids below plus `custom:<id>` entries for configured custom items. `secondaryPlacement` controls whether `secondarySegments` render `"aboveEditor"` or `"belowEditor"`; `topPadding` adds a blank spacer before the primary row; `secondaryTopPadding` adds a blank spacer before an above-editor secondary row; `belowEditorSegments` always stay below the prompt box. With `preset: "custom"`, custom item `position` is ignored.
 
 If you still prefer the old style, `"powerline": "default"` continues to work.
 

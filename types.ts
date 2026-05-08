@@ -115,8 +115,6 @@ export interface PresetDef {
   secondaryTopPadding?: boolean;
   /** Add a blank spacer before the primary powerline row */
   topPadding?: boolean;
-  /** Render primary + secondary segments as one row when all visible segments fit */
-  collapseRowsWhenFit?: boolean;
   separator: StatusLineSeparatorStyle;
   segmentOptions?: StatusLineSegmentOptions;
   /** Color scheme for this preset */
